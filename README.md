@@ -139,7 +139,7 @@ class Service(BaseService):
             cc=['抄送人<cc@test.com>'],
             imags=[(image_name, bytes_io.getvalue())]
         )
-        logger.debug(f'yeah~ yeah~ yeah~, succ={succ} errs={errs}')
+        logger.debug(f'yeah~ yeah~ yeah~, imag mail succ={succ} errs={errs}')
 ```
 
 > facade.py

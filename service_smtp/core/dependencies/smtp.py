@@ -35,6 +35,7 @@ class Smtp(Dependency):
         connect_options = self.container.config.get(f'{SMTP_CONFIG_KEY}.{self.alias}.connect_options', default={})
         # 防止YAML中声明值为None
         self.connect_options = (connect_options or {}) | self.connect_options
+        self.connect_options.setdefault('timeout', 5)
 
     def get_instance(self, context: WorkerContext) -> t.Any:
         """ 获取注入对象

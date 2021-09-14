@@ -15,6 +15,8 @@ pip install -U service-smtp
 > config.yaml
 
 ```yaml
+CONTEXT:
+  - service_smtp.cli.subctxs.smtp:Smtp
 SMTP:
   test:
     connect_options:
@@ -23,8 +25,6 @@ SMTP:
       port: 465
       username: me@test.com
       password: user_passwd
-CONTEXT:
-  - service_smtp.cli.subctxs.smtp:Smtp
 ```
 
 # 入门案例

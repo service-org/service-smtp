@@ -107,13 +107,15 @@ class Service(BaseService):
 
         @return: None
         """
+        file_name = '附件.text'
+        string_io = StringIO('内容')
         succ, errs = self.smtp.send_html_mail(
             subject='subject - test_send_file_mail',
             message='<h1>message - test_send_file_mail</h1>',
             me='发件人<me@test.com>',
             to=['收件人<to@test.com>'],
             cc=['抄送人<cc@test.com>'],
-            files=[('file.txt', StringIO('内容').read().encode())]
+            files=[(file_name, string_io.read().encode())]
         )
         logger.debug(f'yeah~ yeah~ yeah~, file mail succ={succ} errs={errs}')
 

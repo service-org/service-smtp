@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import typing as t
 
-from service_winrm.core.connect import Connection
+from service_smtp.core.connect import Connection
 from service_smtp.constants import SMTP_CONFIG_KEY
 from service_core.core.context import WorkerContext
 from service_core.core.service.dependency import Dependency
@@ -38,7 +38,6 @@ class Smtp(Dependency):
 
     def get_instance(self, context: WorkerContext) -> t.Any:
         """ 获取注入对象
-
         @param context: 上下文对象
         @return: t.Any
         """

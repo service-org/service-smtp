@@ -21,8 +21,8 @@ from email.mime.multipart import MIMEMultipart
 logger = getLogger(__name__)
 
 
-class SMTPClient(object):
-    """ SMTP通用连接类 """
+class SmtpClient(object):
+    """ Smtp通用连接类 """
 
     def __init__(
             self,

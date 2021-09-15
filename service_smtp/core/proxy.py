@@ -9,7 +9,7 @@ import typing as t
 from service_core.core.configure import Configure
 from service_smtp.constants import SMTP_CONFIG_KEY
 
-from .client import SMTPClient
+from .client import SmtpClient
 
 
 class SmtpProxy(object):
@@ -24,7 +24,7 @@ class SmtpProxy(object):
         self.config = config
         self.options = options
 
-    def __call__(self, alias: t.Text, **options: t.Text) -> SMTPClient:
+    def __call__(self, alias: t.Text, **options: t.Text) -> SmtpClient:
         """ 代理可调用
 
         @param alias: 配置别名
@@ -37,4 +37,4 @@ class SmtpProxy(object):
         config = self.config.get(f'{SMTP_CONFIG_KEY}.{alias}.connect_options', default={})
         # 调用时传递的参数配置优先级最高
         config.update(cur_options)
-        return SMTPClient(**config)
+        return SmtpClient(**config)

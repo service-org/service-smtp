@@ -4,4 +4,4 @@
 
 from __future__ import annotations
 
-from .smtp import SMTP
+from .smtp import Smtp

@@ -21,8 +21,8 @@ from email.mime.multipart import MIMEMultipart
 logger = getLogger(__name__)
 
 
-class Connection(object):
-    """ Smtp通用连接类 """
+class SMTPClient(object):
+    """ SMTP通用连接类 """
 
     def __init__(
             self,
@@ -38,8 +38,8 @@ class Connection(object):
         @param args: 位置参数
         @param: username: 认证账户
         @param: password: 认证密码
-        @param: debug: 是否启用调试?
-        @param wrap_ssl: 使用ssl?
+        @param: debug: 启用调试?
+        @param wrap_ssl: 启用ssl?
         @param kwargs: 命名参数
         """
         self.debug = debug or False
@@ -78,9 +78,9 @@ class Connection(object):
 
         @param subject: 邮件主题
         @param message: 邮件内容
-        @param me: 发送人,支持多人
-        @param to: 接收人,支持多人
-        @param cc: 抄送人,支持多人
+        @param me: 发送人
+        @param to: 接收人
+        @param cc: 抄送人
         @return: t.Tuple[bool, t.Optional[t.Text]]
         """
         send_result, send_errors = True, None
@@ -121,9 +121,9 @@ class Connection(object):
 
         @param subject: 邮件主题
         @param message: 邮件内容
-        @param me: 发送人,支持多人
-        @param to: 接收人,支持多人
-        @param cc: 抄送人,支持多人
+        @param me: 发送人
+        @param to: 接收人
+        @param cc: 抄送人
         @return: t.Tuple[bool, t.Optional[t.Text]]
         """
         message = MIMEText(message, _subtype='plain', _charset='utf-8')
@@ -143,9 +143,9 @@ class Connection(object):
 
         @param subject: 邮件主题
         @param message: 邮件内容
-        @param me: 发送人,支持多人
-        @param to: 接收人,支持多人
-        @param cc: 抄送人,支持多人
+        @param me: 发送人
+        @param to: 接收人
+        @param cc: 抄送人
         @param files: 附件中的文件
         @param imags: 附件中的图片
         @return: t.Tuple[bool, t.Optional[t.Text]]

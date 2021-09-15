@@ -6,14 +6,14 @@ from __future__ import annotations
 
 import typing as t
 
-from service_smtp.core.connect import Connection
+from service_smtp.core.client import SMTPClient
 from service_smtp.constants import SMTP_CONFIG_KEY
 from service_core.core.context import WorkerContext
 from service_core.core.service.dependency import Dependency
 
 
-class Smtp(Dependency):
-    """ Smtp依赖类 """
+class SMTP(Dependency):
+    """ SMTP依赖类 """
 
     def __init__(self, alias: t.Text, connect_options: t.Optional[t.Dict[t.Text, t.Any]] = None, **kwargs: t.Text):
         """ 初始化实例
@@ -25,7 +25,7 @@ class Smtp(Dependency):
         self.alias = alias
         self.session_map = {}
         self.connect_options = connect_options or {}
-        super(Smtp, self).__init__(**kwargs)
+        super(SMTP, self).__init__(**kwargs)
 
     def setup(self) -> None:
         """ 生命周期 - 载入阶段
@@ -44,7 +44,7 @@ class Smtp(Dependency):
         """
         # 主要用于优雅关闭每条连接
         call_id = context.worker_request_id
-        self.session_map[call_id] = Connection(**self.connect_options)
+        self.session_map[call_id] = SMTPClient(**self.connect_options)
         return self.session_map[call_id]
 
     def worker_finish(self, context: WorkerContext) -> None:

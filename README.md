@@ -51,11 +51,11 @@ from io import BytesIO
 from io import StringIO
 from PIL import ImageDraw
 from logging import getLogger
-from service_smtp.core.dependencies import Smtp
+from service_smtp.core.dependencies import SMTP
+from service_smtp.core.client import SMTPClient
 from service_smtp.core.convert import from_name_to_cid
 from service_croniter.core.entrypoints import croniter
 from service_core.core.service import Service as BaseService
-from service_smtp.core.connect import Connection as SmtpConnection
 
 logger = getLogger(__name__)
 
@@ -69,7 +69,7 @@ class Service(BaseService):
     desc = 'demo'
 
     # SMTP协议
-    smtp: SmtpConnection = Smtp(alias='test')
+    smtp: SMTPClient = SMTP(alias='test')
 
     @croniter.cron('* * * * * */1')
     def test_send_text_mail(self) -> None:

@@ -17,6 +17,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
+from service_core.core.decorator import AsFriendlyFunc
 
 logger = getLogger(__name__)
 
@@ -42,15 +43,20 @@ class SmtpClient(object):
         @param wrap_ssl: 启用ssl?
         @param kwargs: 命名参数
         """
+        self._args = args
+        self._kwargs = kwargs
         self.debug = debug or False
         self.username = username
         self.password = password
         self.wrap_ssl = wrap_ssl or False
-        self.server = SMTP_SSL(*args, **kwargs) if self.wrap_ssl else SMTP(*args, **kwargs)
 
-    def release(self) -> None:
-        """ 注销本此链接 """
-        self.server.__exit__()
+    def connect(self) -> t.Union[SMTP_SSL, SMTP]:
+        """ 创建一个连接
+
+        @return: t.Union[SMTP_SSL, SMTP]
+        """
+        smtp_class = SMTP_SSL if self.wrap_ssl else SMTP
+        return smtp_class(*self._args, **self._kwargs)
 
     @staticmethod
     def fmt_mails(mails: t.List[t.Text]) -> t.List[t.Text]:
@@ -83,9 +89,11 @@ class SmtpClient(object):
         @param cc: 抄送人
         @return: t.Tuple[bool, t.Optional[t.Text]]
         """
-        send_result, send_errors = True, None
+        client, send_result, send_errors = None, True, None
         try:
-            subject = Header(subject, 'utf-8').encode()
+            client = self.connect()
+            subject = Header(subject, 'utf-8')
+            subject = subject.encode()
             if not isinstance(me, list):
                 me = [] if me is None else [me]
             me = self.fmt_mails(me) if me else me
@@ -95,19 +103,21 @@ class SmtpClient(object):
             if not isinstance(cc, list):
                 cc = [] if cc is None else [cc]
             cc = self.fmt_mails(cc) if cc else cc
-            message['From'] = ','.join(me)
             message['to'] = ','.join(to)
             message['cc'] = ','.join(cc)
             message['Subject'] = subject
-            self.debug and self.server.set_debuglevel(1)
-            self.server.login(self.username, self.password)
+            message['From'] = ','.join(me)
+            self.debug and client.set_debuglevel(1)
+            client.login(self.username, self.password)
             me = me[0] if len(me) == 1 else self.username
-            self.server.sendmail(me, to + cc, message.as_string())
+            client.sendmail(me, to + cc, message.as_string())
         except:
-            send_result, send_errors = False, traceback.format_exc()
+            send_result = False
+            send_errors = traceback.format_exc()
             logger.error('unexpected error while send mail', exc_info=True)
         finally:
-            return send_result, send_errors
+            client and AsFriendlyFunc(client.quit)()
+        return send_result, send_errors
 
     def send_text_mail(
             self,

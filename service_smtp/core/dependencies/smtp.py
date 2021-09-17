@@ -23,7 +23,7 @@ class Smtp(Dependency):
         @param kwargs: 其它配置
         """
         self.alias = alias
-        self.session_map = {}
+        self.client = None
         self.connect_options = connect_options or {}
         super(Smtp, self).__init__(**kwargs)
 
@@ -36,23 +36,11 @@ class Smtp(Dependency):
         # 防止YAML中声明值为None
         self.connect_options = (connect_options or {}) | self.connect_options
         self.connect_options.setdefault('timeout', 5)
+        self.client = SmtpClient(**self.connect_options)
 
     def get_instance(self, context: WorkerContext) -> t.Any:
         """ 获取注入对象
         @param context: 上下文对象
         @return: t.Any
         """
-        # 主要用于优雅关闭每条连接
-        call_id = context.worker_request_id
-        self.session_map[call_id] = SmtpClient(**self.connect_options)
-        return self.session_map[call_id]
-
-    def worker_finish(self, context: WorkerContext) -> None:
-        """ 工作协程 - 完毕回调
-        @param context: 上下文对象
-        @return: None
-        """
-        # 主要用于优雅关闭每条连接
-        call_id = context.worker_request_id
-        session = self.session_map.pop(call_id, None)
-        session and session.release()
+        return self.client

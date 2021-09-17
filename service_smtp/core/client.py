@@ -110,7 +110,8 @@ class SmtpClient(object):
             self.debug and client.set_debuglevel(1)
             client.login(self.username, self.password)
             me = me[0] if len(me) == 1 else self.username
-            client.sendmail(me, to + cc, message.as_string())
+            message = message.as_string()
+            client.sendmail(me, to + cc, message)
         except:
             send_result = False
             send_errors = traceback.format_exc()

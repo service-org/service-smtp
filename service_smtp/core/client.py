@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-import traceback
 import typing as t
 
 from smtplib import SMTP
@@ -17,7 +16,6 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
-from service_core.core.decorator import AsFriendlyFunc
 
 logger = getLogger(__name__)
 
@@ -79,7 +77,7 @@ class SmtpClient(object):
             me: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
             to: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
             cc: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None
-    ) -> t.Tuple[bool, t.Optional[t.Text]]:
+    ) -> None:
         """ 发送通用邮件
 
         @param subject: 邮件主题
@@ -87,38 +85,30 @@ class SmtpClient(object):
         @param me: 发送人
         @param to: 接收人
         @param cc: 抄送人
-        @return: t.Tuple[bool, t.Optional[t.Text]]
+        @return: None
         """
-        client, send_result, send_errors = None, True, None
-        try:
-            client = self.connect()
-            subject = Header(subject, 'utf-8')
-            subject = subject.encode()
-            if not isinstance(me, list):
-                me = [] if me is None else [me]
-            me = self.fmt_mails(me) if me else me
-            if not isinstance(to, list):
-                to = [] if to is None else [to]
-            to = self.fmt_mails(to) if to else to
-            if not isinstance(cc, list):
-                cc = [] if cc is None else [cc]
-            cc = self.fmt_mails(cc) if cc else cc
-            message['to'] = ','.join(to)
-            message['cc'] = ','.join(cc)
-            message['Subject'] = subject
-            message['From'] = ','.join(me)
-            self.debug and client.set_debuglevel(1)
-            client.login(self.username, self.password)
-            me = me[0] if len(me) == 1 else self.username
-            message = message.as_string()
-            client.sendmail(me, to + cc, message)
-        except:
-            send_result = False
-            send_errors = traceback.format_exc()
-            logger.error('unexpected error while send mail', exc_info=True)
-        finally:
-            client and AsFriendlyFunc(client.quit)()
-        return send_result, send_errors
+        client = self.connect()
+        subject = Header(subject, 'utf-8')
+        subject = subject.encode()
+        if not isinstance(me, list):
+            me = [] if me is None else [me]
+        me = self.fmt_mails(me) if me else me
+        if not isinstance(to, list):
+            to = [] if to is None else [to]
+        to = self.fmt_mails(to) if to else to
+        if not isinstance(cc, list):
+            cc = [] if cc is None else [cc]
+        cc = self.fmt_mails(cc) if cc else cc
+        message['to'] = ','.join(to)
+        message['cc'] = ','.join(cc)
+        message['Subject'] = subject
+        message['From'] = ','.join(me)
+        self.debug and client.set_debuglevel(1)
+        client.login(self.username, self.password)
+        me = me[0] if len(me) == 1 else self.username
+        message = message.as_string()
+        client.sendmail(me, to + cc, message)
+        client.quit()
 
     def send_text_mail(
             self,
@@ -127,7 +117,7 @@ class SmtpClient(object):
             me: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
             to: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
             cc: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None
-    ) -> t.Tuple[bool, t.Optional[t.Text]]:
+    ) -> None:
         """ 发送文本邮件
 
         @param subject: 邮件主题
@@ -135,10 +125,10 @@ class SmtpClient(object):
         @param me: 发送人
         @param to: 接收人
         @param cc: 抄送人
-        @return: t.Tuple[bool, t.Optional[t.Text]]
+        @return: None
         """
         message = MIMEText(message, _subtype='plain', _charset='utf-8')
-        return self.send_mail(subject=subject, message=message, me=me, to=to, cc=cc)
+        self.send_mail(subject=subject, message=message, me=me, to=to, cc=cc)
 
     def send_html_mail(
             self,
@@ -149,7 +139,7 @@ class SmtpClient(object):
             me: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
             to: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
             cc: t.Optional[t.Union[t.Text, t.List[t.Text]]] = None,
-    ) -> t.Tuple[bool, t.Optional[t.Text]]:
+    ) -> None:
         """ 发送网页邮件
 
         @param subject: 邮件主题
@@ -172,4 +162,4 @@ class SmtpClient(object):
             i = MIMEImage(imag_bytes, _subtype='png')
             i.add_header('Content-ID', imag_name)
             multipart.attach(i)
-        return self.send_mail(subject=subject, message=multipart, me=me, to=to, cc=cc)
+        self.send_mail(subject=subject, message=multipart, me=me, to=to, cc=cc)

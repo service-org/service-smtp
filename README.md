@@ -77,14 +77,14 @@ class Service(BaseService):
 
         @return: None
         """
-        succ, errs = self.smtp.send_text_mail(
+        self.smtp.send_text_mail(
             subject='subject - test_send_text_mail',
             message='message - test_send_text_mail',
             me='me@test.com',
             to=['to@test.com'],
             cc=['cc@test.com']
         )
-        logger.debug(f'yeah~ yeah~ yeah~, text mail succ={succ} errs={errs}')
+        logger.debug(f'yeah~ yeah~ yeah~, send text mail succ')
 
     @croniter.cron('* * * * * */1')
     def test_send_html_mail(self) -> None:
@@ -92,14 +92,14 @@ class Service(BaseService):
 
         @return: None
         """
-        succ, errs = self.smtp.send_html_mail(
+        self.smtp.send_html_mail(
             subject='subject - test_send_html_mail',
             message='<h1>message - test_send_html_mail</h1>',
             me='发件人<me@test.com>',
             to=['收件人<to@test.com>'],
             cc=['抄送人<cc@test.com>']
         )
-        logger.debug(f'yeah~ yeah~ yeah~, html mail succ={succ} errs={errs}')
+        logger.debug(f'yeah~ yeah~ yeah~, send html mail succ')
 
     @croniter.cron('* * * * * */1')
     def test_send_file_mail(self) -> None:
@@ -109,7 +109,7 @@ class Service(BaseService):
         """
         file_name = '附件.text'
         string_io = StringIO('内容')
-        succ, errs = self.smtp.send_html_mail(
+        self.smtp.send_html_mail(
             subject='subject - test_send_file_mail',
             message='<h1>message - test_send_file_mail</h1>',
             me='发件人<me@test.com>',
@@ -117,7 +117,7 @@ class Service(BaseService):
             cc=['抄送人<cc@test.com>'],
             files=[(file_name, string_io.read().encode())]
         )
-        logger.debug(f'yeah~ yeah~ yeah~, file mail succ={succ} errs={errs}')
+        logger.debug(f'yeah~ yeah~ yeah~, send file mail succ')
 
     @croniter.cron('* * * * * */1')
     def test_send_imag_mail(self) -> None:
@@ -131,7 +131,7 @@ class Service(BaseService):
         bytes_io = BytesIO()
         image.save(bytes_io, 'PNG')
         image_name = from_name_to_cid('图片.png')
-        succ, errs = self.smtp.send_html_mail(
+        self.smtp.send_html_mail(
             subject='subject - test_send_imag_mail',
             message=f'<img src="cid:{image_name}">',
             me='发件人<me@test.com>',
@@ -139,7 +139,7 @@ class Service(BaseService):
             cc=['抄送人<cc@test.com>'],
             imags=[(image_name, bytes_io.getvalue())]
         )
-        logger.debug(f'yeah~ yeah~ yeah~, imag mail succ={succ} errs={errs}')
+        logger.debug(f'yeah~ yeah~ yeah~, send imag mail succ')
 ```
 
 > facade.py

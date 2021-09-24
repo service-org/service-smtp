@@ -37,9 +37,9 @@ class Smtp(Dependency):
         self.connect_options.setdefault('timeout', 5)
         self.client = SmtpClient(**self.connect_options)
 
-    def get_instance(self) -> t.Any:
+    def get_instance(self) -> SmtpClient:
         """ 获取注入对象
 
-        @return: t.Any
+        @return: SmtpClient
         """
         return self.client

@@ -8,7 +8,6 @@ import typing as t
 
 from service_smtp.core.client import SmtpClient
 from service_smtp.constants import SMTP_CONFIG_KEY
-from service_core.core.context import WorkerContext
 from service_core.core.service.dependency import Dependency
 
 
@@ -38,9 +37,9 @@ class Smtp(Dependency):
         self.connect_options.setdefault('timeout', 5)
         self.client = SmtpClient(**self.connect_options)
 
-    def get_instance(self, context: WorkerContext) -> t.Any:
+    def get_instance(self) -> t.Any:
         """ 获取注入对象
-        @param context: 上下文对象
+
         @return: t.Any
         """
         return self.client

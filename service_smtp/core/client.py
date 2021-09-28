@@ -65,9 +65,10 @@ class SmtpClient(object):
         """
         result = []
         for mail in mails:
-            pair = parseaddr(mail)
-            addr = Header(pair[0], 'utf-8').encode(), pair[1]
-            result.append(formataddr(addr, charset='utf-8'))
+            name, addr = parseaddr(mail)
+            name = name or mail.split('@', 1)[0]
+            pair = Header(name, 'utf-8').encode(), addr
+            result.append(formataddr(pair, charset='utf-8'))
         return result
 
     def send_mail(

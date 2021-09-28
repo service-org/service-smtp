@@ -92,7 +92,7 @@ class SmtpClient(object):
         subject = Header(subject, 'utf-8')
         subject = subject.encode()
         if not isinstance(me, list):
-            me = [] if me is None else [me]
+            me = [self.username] if me is None else [me]
         me = self.fmt_mails(me) if me else me
         if not isinstance(to, list):
             to = [] if to is None else [to]
@@ -106,9 +106,8 @@ class SmtpClient(object):
         message['From'] = ','.join(me)
         self.debug and client.set_debuglevel(1)
         client.login(self.username, self.password)
-        me = me[0] if len(me) == 1 else self.username
         message = message.as_string()
-        client.sendmail(me, to + cc, message)
+        client.sendmail(me[0], to + cc, message)
         client.quit()
 
     def send_text_mail(

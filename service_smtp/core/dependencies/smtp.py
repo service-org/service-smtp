@@ -14,6 +14,8 @@ from service_core.core.service.dependency import Dependency
 class Smtp(Dependency):
     """ Smtp依赖类 """
 
+    name = 'Smtp'
+
     def __init__(self, alias: t.Text, connect_options: t.Optional[t.Dict[t.Text, t.Any]] = None, **kwargs: t.Any):
         """ 初始化实例
 
